@@ -4,8 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="theme-color" content="#050508">
   <title>AI Tools Quiz voor Marketeers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,9 +18,9 @@
        ======================================== -->
   <div id="screen-role" class="screen">
     <div class="role-selection">
-      <div class="role-logo">🤖</div>
-      <h1>AI Tools Quiz</h1>
-      <p class="subtitle">voor Marketeers</p>
+      <span class="role-logo">🤖</span>
+      <h1 class="role-title">AI Tools<br><span>Quiz</span></h1>
+      <p class="role-subtitle">voor Marketeers</p>
       <div class="role-buttons">
         <button class="btn-role btn-host" onclick="selectRole('host')">
           <span class="role-icon">🖥️</span>
@@ -92,7 +95,9 @@
         </div>
       </div>
 
-      <div class="question-text" id="host-q-text"></div>
+      <div class="question-spotlight">
+        <div class="question-text" id="host-q-text"></div>
+      </div>
 
       <div class="host-answer-grid" id="host-answer-grid"></div>
 
@@ -137,8 +142,9 @@
        ======================================== -->
   <div id="screen-player-join" class="screen">
     <div class="player-join">
-      <div class="join-logo">🤖</div>
+      <span class="join-logo">🤖</span>
       <h1>AI Tools Quiz</h1>
+      <span class="join-tagline">voor Marketeers</span>
       <div class="join-form">
         <input
           type="text"
@@ -160,9 +166,10 @@
        ======================================== -->
   <div id="screen-player-waiting" class="screen">
     <div class="player-waiting">
-      <div class="waiting-animation">⏳</div>
+      <div class="waiting-ring"></div>
       <h2>Wacht op de host…</h2>
       <p id="waiting-name"></p>
+      <p class="waiting-sub">De quiz begint zo!</p>
       <div class="waiting-dots">
         <span></span><span></span><span></span>
       </div>
@@ -191,7 +198,7 @@
        ======================================== -->
   <div id="screen-player-answer-sent" class="screen">
     <div class="player-answer-sent">
-      <div class="sent-icon">✅</div>
+      <div class="sent-ring">✅</div>
       <h2>Antwoord ontvangen!</h2>
       <p>Wacht op de reveal…</p>
       <div class="waiting-dots">
