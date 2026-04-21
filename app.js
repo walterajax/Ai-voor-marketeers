@@ -9,6 +9,7 @@ let myAnswers = {};
 let players = {};
 let currentQIndex = 0;
 let answersListenerRef = null;
+let revealTriggered = false;
 
 const ANSWER_COLORS = ['a', 'b', 'c', 'd'];
 const ANSWER_LABELS = ['A', 'B', 'C', 'D'];
@@ -196,6 +197,7 @@ async function loadQuestion(qIndex) {
 }
 
 function showHostQuestion(qIndex, startTime) {
+  revealTriggered = false;
   stopTimer();
   showScreen('screen-host-question');
 
@@ -232,6 +234,12 @@ function listenAnswerCount(qIndex) {
     const total = Object.keys(players).length;
     document.getElementById('answer-counter').textContent =
       `${answered} van ${total} ${total === 1 ? 'heeft' : 'hebben'} geantwoord`;
+
+    if (total > 0 && answered >= total && !revealTriggered) {
+      revealTriggered = true;
+      stopTimer();
+      revealAnswer(qIndex);
+    }
   });
 }
 
@@ -250,7 +258,8 @@ function startHostTimer(startTime, qIndex) {
       else if (remaining <= 10) circle.style.stroke = '#F0A034';
     }
 
-    if (elapsed >= TIMER_DURATION) {
+    if (elapsed >= TIMER_DURATION && !revealTriggered) {
+      revealTriggered = true;
       stopTimer();
       revealAnswer(qIndex);
     }
