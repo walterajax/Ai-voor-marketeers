@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>AI Tools Quiz voor Marketeers</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ========================================
+       ROLKEUZE
+       ======================================== -->
+  <div id="screen-role" class="screen">
+    <div class="role-selection">
+      <div class="role-logo">🤖</div>
+      <h1>AI Tools Quiz</h1>
+      <p class="subtitle">voor Marketeers</p>
+      <div class="role-buttons">
+        <button class="btn-role btn-host" onclick="selectRole('host')">
+          <span class="role-icon">🖥️</span>
+          <span class="role-label">Host</span>
+          <span class="role-desc">Beamer scherm</span>
+        </button>
+        <button class="btn-role btn-player" onclick="selectRole('player')">
+          <span class="role-icon">📱</span>
+          <span class="role-label">Speler</span>
+          <span class="role-desc">Jouw telefoon</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       HOST — LOBBY
+       ======================================== -->
+  <div id="screen-host-lobby" class="screen">
+    <div class="host-lobby">
+      <div class="lobby-header">
+        <h1>🤖 AI Tools Quiz</h1>
+        <p>Scan de QR-code of deel de link om mee te spelen</p>
+      </div>
+
+      <div class="lobby-main">
+        <!-- QR & link -->
+        <div class="lobby-left">
+          <div id="qr-code"></div>
+          <div class="lobby-url">
+            <span id="lobby-url-text"></span>
+            <button id="btn-copy" class="btn-copy" onclick="copyUrl()">📋 Kopieer</button>
+          </div>
+        </div>
+
+        <!-- Player list -->
+        <div class="lobby-right">
+          <h2>Deelnemers&nbsp;(<span id="player-count">0</span>)</h2>
+          <div id="player-list" class="player-list"></div>
+        </div>
+      </div>
+
+      <!-- Question preview -->
+      <div class="lobby-preview">
+        <h3>Preview eerste vraag:</h3>
+        <div id="question-preview"></div>
+      </div>
+
+      <button id="btn-start" class="btn-start" onclick="startQuiz()" disabled>
+        🚀 Start Quiz
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================
+       HOST — VRAAG ACTIEF
+       ======================================== -->
+  <div id="screen-host-question" class="screen">
+    <div class="host-question">
+      <div class="question-header">
+        <span class="question-number" id="host-q-number">Vraag 1 / 10</span>
+        <div class="timer-wrap">
+          <svg class="timer-ring" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="9"/>
+            <circle id="timer-circle" cx="50" cy="50" r="45" fill="none"
+              stroke="#5CBB6E" stroke-width="9"
+              stroke-dasharray="283" stroke-dashoffset="0"
+              transform="rotate(-90 50 50)"
+              style="transition: stroke-dashoffset 0.1s linear, stroke 0.3s;"/>
+          </svg>
+          <span class="timer-text" id="host-timer">20</span>
+        </div>
+      </div>
+
+      <div class="question-text" id="host-q-text"></div>
+
+      <div class="host-answer-grid" id="host-answer-grid"></div>
+
+      <div class="answer-counter" id="answer-counter">0 van 0 hebben geantwoord</div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       HOST — REVEAL
+       ======================================== -->
+  <div id="screen-host-reveal" class="screen">
+    <div class="host-reveal">
+      <div class="reveal-header">
+        <span id="reveal-q-number">Vraag 1 / 10</span>
+        <h2 id="reveal-q-text"></h2>
+      </div>
+
+      <div class="host-answer-grid" id="reveal-answer-grid"></div>
+
+      <!-- Antwoord verdeling bar chart -->
+      <div class="answer-bars" id="answer-bars"></div>
+
+      <button class="btn-next" onclick="nextQuestion()">
+        <span id="next-btn-text">Volgende vraag →</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================
+       HOST — EINDSTAND
+       ======================================== -->
+  <div id="screen-host-end" class="screen">
+    <div class="host-end">
+      <h1>🏆 Eindstand</h1>
+      <div id="host-leaderboard" class="leaderboard"></div>
+      <button class="btn-restart" onclick="restartQuiz()">🔄 Nieuwe quiz</button>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SPELER — INSCHRIJVEN
+       ======================================== -->
+  <div id="screen-player-join" class="screen">
+    <div class="player-join">
+      <div class="join-logo">🤖</div>
+      <h1>AI Tools Quiz</h1>
+      <div class="join-form">
+        <input
+          type="text"
+          id="player-name-input"
+          placeholder="Jouw naam"
+          maxlength="20"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          onkeydown="if(event.key==='Enter') joinQuiz()">
+        <button class="btn-join" onclick="joinQuiz()">Doe mee! 🚀</button>
+      </div>
+      <div id="join-error" class="error-msg"></div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SPELER — WACHTKAMER
+       ======================================== -->
+  <div id="screen-player-waiting" class="screen">
+    <div class="player-waiting">
+      <div class="waiting-animation">⏳</div>
+      <h2>Wacht op de host…</h2>
+      <p id="waiting-name"></p>
+      <div class="waiting-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SPELER — VRAAG ACTIEF
+       ======================================== -->
+  <div id="screen-player-question" class="screen">
+    <div class="player-question">
+      <div class="player-timer-bar">
+        <div id="player-timer-fill" class="timer-fill"></div>
+      </div>
+      <div id="player-timer-text" class="player-timer-text">20</div>
+      <div class="player-q-info">
+        <span id="player-q-number">Vraag 1 / 10</span>
+      </div>
+      <div id="player-q-text" class="player-q-text"></div>
+      <div class="player-answer-grid" id="player-answer-grid"></div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SPELER — ANTWOORD VERSTUURD
+       ======================================== -->
+  <div id="screen-player-answer-sent" class="screen">
+    <div class="player-answer-sent">
+      <div class="sent-icon">✅</div>
+      <h2>Antwoord ontvangen!</h2>
+      <p>Wacht op de reveal…</p>
+      <div class="waiting-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SPELER — REVEAL
+       ======================================== -->
+  <div id="screen-player-reveal" class="screen">
+    <div class="player-reveal">
+      <div id="reveal-result-icon" class="reveal-icon"></div>
+      <div id="reveal-result-text" class="reveal-result-text"></div>
+      <div id="reveal-correct-answer" class="reveal-correct-answer"></div>
+      <div id="reveal-points" class="reveal-points"></div>
+      <div class="reveal-score">
+        Totale score: <strong id="player-total-score">0</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SPELER — EINDSTAND
+       ======================================== -->
+  <div id="screen-player-end" class="screen">
+    <div class="player-end">
+      <div id="player-end-icon">🎉</div>
+      <h2>Quiz afgelopen!</h2>
+      <div id="player-final-rank" class="final-rank"></div>
+      <div id="player-final-score" class="final-score"></div>
+      <div id="player-winner-display" class="winner-display"></div>
+    </div>
+  </div>
+
+  <!-- QR watermark — zichtbaar op alle host-schermen -->
+  <div id="host-qr-watermark" style="display:none">
+    <div id="host-qr-mini"></div>
+    <span id="host-qr-label"></span>
+  </div>
+
+  <!-- ========================================
+       FIREBASE NIET GECONFIGUREERD
+       ======================================== -->
+  <div id="firebase-overlay" class="overlay" style="display:none">
+    <div class="overlay-content">
+      <h2>⚙️ Firebase instellen</h2>
+      <p>Vul je Firebase-configuratie in <code>firebase.js</code> in voordat je de app gebruikt.</p>
+      <ol>
+        <li>Maak een project aan op <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a></li>
+        <li>Activeer <strong>Realtime Database</strong> (kies testmodus)</li>
+        <li>Ga naar <em>Project Settings → Your apps → Web app</em></li>
+        <li>Kopieer de <code>firebaseConfig</code> naar <code>firebase.js</code></li>
+        <li>Herlaad de pagina</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SCRIPTS
+       ======================================== -->
+  <!-- Firebase Compat SDK (v9) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <!-- App scripts -->
+  <script src="questions.js"></script>
+  <script src="firebase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
